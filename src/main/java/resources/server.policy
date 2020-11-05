@@ -1,0 +1,3 @@
+grant  {
+    permission java.io.FilePermission "C:/Users/X13/AppData/Local/Temp/-", "read, write, delete";
+};
