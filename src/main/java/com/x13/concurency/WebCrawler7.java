@@ -1,4 +1,4 @@
-package concurency;
+package com.x13.concurency;
 
 import java.util.Collection;
 import java.util.Collections;

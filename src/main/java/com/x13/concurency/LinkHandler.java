@@ -1,4 +1,4 @@
-package concurency;
+package com.x13.concurency;
 
 /**
  * Created by X13 on 14.02.2017.
