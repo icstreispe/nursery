@@ -12,11 +12,14 @@ import java.util.Set;
 import java.util.TreeSet;
 
 
-//TODO tr sincronizata si structura de directoare (poate separat inainte de a incepe sincroniz fis!!!!) ca altfel nu prea merge
+/**
+ * prima oara sincronizeaza structura de directoare
+ * apoi sincronizeaza si fisierele pe baza diferentelor de size
+ */
 public class Synchronizer {
 
     public static final String FILES_KEY = "files";
-    private boolean REAL_SYNC = true;           //!!!!!!!!!!!!!!!!!!!! daca sa si faca syncronizarea cu adevarat!!!
+    private static boolean HARD_SYNC = false;           // true = cand vrem syncronizare reala, nu doar afisari!!!!
     public static final String ROOT_SRC = "E:\\users\\mihai\\media\\00.skanhex";
     public static final String ROOT_DEST = "E:\\users\\mihai\\media\\00.skanhex - Copy";
 
@@ -130,14 +133,19 @@ public class Synchronizer {
     private static String buildPath(String absolutePath, String rootSrc, String rootDest) {
         return rootDest + absolutePath.substring(rootSrc.length());
     }
-
     private static String getAbsolutePath(String relativePath, String root) {
         return root + relativePath;
+    }
+    private static String getRelativePath(String root, File f) {
+        return f.getAbsolutePath().substring(root.length());
     }
 
     //copiere prin suprascriere!
     //dar tr sa existe toate directoarele pana la fisier!
     private static void copy (String pathS, String pathD) {
+        if (!HARD_SYNC){
+            return ;
+        }
         try {
             Path from = Paths.get(pathS);
             Path to = Paths.get(pathD);
@@ -148,6 +156,9 @@ public class Synchronizer {
     }
 
     private static void md (String pathS){
+        if (!HARD_SYNC){
+            return ;
+        }
         try {
             Path path = Paths.get(pathS);
             Files.createDirectories(path);
@@ -159,7 +170,9 @@ public class Synchronizer {
     //delete in cascada
     //TODO de inlocuit cu mutare in alt director
     private static void rm(String pathS) {
-
+        if (!HARD_SYNC){
+            return ;
+        }
         File f = new File(pathS);
         if (f.isDirectory()) {
             for (File c : f.listFiles()) {
@@ -184,31 +197,6 @@ public class Synchronizer {
         return l;
     }
 
-    /* TODO
-    private static Map buildBySize(File d, int level) {
-        Map<String, File> files = new HashMap();
-        for (File f : d.listFiles()) {
-            String key = "" + f.length();
-            if (!f.isDirectory()){
-                if (!files.containsKey(key)) {
-                    files.put(key, f);
-                } else {
-                    print(level, f);
-                    System.out.print("\t");
-                    print(level, files.get(key));
-                    System.out.println();
-                }
-            }
-
-            if (f.isDirectory()) {
-                Map m = buildBySize(f, level);
-                files.putAll(m);
-            }
-
-        }
-        return files;
-    }
-     */
 
     //construieste un map cu toate fis&dir din dir
     //la directoare tr ordine (si sunt structurate), dar fis pot fi toate la gramada
@@ -240,10 +228,6 @@ public class Synchronizer {
 
 
 
-    private static String getRelativePath(String root, File f) {
-        return f.getAbsolutePath().substring(root.length());
-    }
-
     private static void print(int level, File f) {
 
         String s = String.format("%" + (2 * level) + "s", " ");
@@ -255,8 +239,4 @@ public class Synchronizer {
         System.out.println(s);
     }
 
-    private class Folders {
-        Map files;
-        Map folders;
-    }
 }
